@@ -1,25 +1,55 @@
-import logo from './logo.svg';
-import './App.css';
+// import react ,{useState} from "react";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import NavigationBar from "./components/NavigationBar";
+import Home from "../src/components/Home";
+import Footer from "./components/footer";
+import LoginPage from "./components/LoginPage";
+import Registration from "./components/Registration";
+import Travel from "./components/Travel";  
+import "./index.css";
+import UserTable from "./components/UserTable";
+import CreateTable from "./components/CreateTable";
+import EditTable from "./components/EditTable";
+import { AuthProvider } from "./components/context/authContext"; 
+import ProtectedRoute from "./components/services/protectedRoute"; 
 
-function App() {
+
+
+const App = () => {
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="mx-auto bd-red-200">
+      <Router>
+        <NavigationBar /> {/* Navigation Bar is always visible */}
+        <AuthProvider>
+
+        <Routes>
+          
+         
+          <Route path="/" element={<LoginPage/>} />
+          <Route path="/home" element={<Home/>} />
+          <Route path="/travel-History" element={<Travel/>} />
+          <Route path="/track-register" element={<Registration />} />
+          <Route path="/UserTable"element={<UserTable/>}/>
+          <Route path="/CreateTable"element={<CreateTable/>}/>
+          <Route path="/EditTable" element={<EditTable/>}/>
+          
+        
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Home />} />
+            {/* Add more protected routes here */}
+          </Route>
+          
+          {/* Add more routes as needed */}
+        </Routes>
+        {/* Footer Section */}
+        <Footer />
+        </AuthProvider>
+      </Router>
+     
     </div>
   );
-}
+};
 
 export default App;

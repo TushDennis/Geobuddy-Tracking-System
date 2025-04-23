@@ -1,74 +1,73 @@
 // src/services/authService.js
-// Service which will handle API calls to your backend: logIn,LogOut,registering users
+// Service which will handle API calls to your backend: logIn, logOut, registering users
 // Getting the login token, getting the current logged-in user
 // Contains the functions to login, register, logout
 
+const API_URL = "http://localhost:8080";
 
-const API_URL = 'https://your-api-url.com/api';
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`, // Attach token to the header
+  };
+};
 
-export const authService = {
-  // Register new user
-  register: async (userData) => {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Registration failed');
-    }
-    
-    return response.json();
+const authService = {
+  // Get current user from localStorage
+  getCurrentUser: () => {
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user) : null;
   },
-  
-  // Login user
+
+  // Login function (authenticate the user)
   login: async (credentials) => {
-    const response = await fetch(`${API_URL}/auth/Login`, {
-      method: 'POST',
+    const response = await fetch(`${API_URL}/auth/login`, {
+      // Make sure to use the correct endpoint path
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Login failed');
-    }
-    
+
+    if (!response.ok) throw new Error("Login failed");
     const data = await response.json();
-    // Store token in localStorage
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-    }
-     
+
+    // Store user data and token in localStorage
+    localStorage.setItem("user", JSON.stringify(data.user)); // You can store just the necessary user data here
+    localStorage.setItem("token", data.response); // Store the token (check if the response field matches the token you return)
+
+    return data; // Return the response data so the context can process it
+  },
+
+  // Register function (create a new user)
+  register: async (userData) => {
+    const response = await fetch(`${API_URL}/auth/register`, {
+      // Fixed endpoint to match backend
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) throw new Error("Registration failed");
+    const data = await response.json();
+
     return data;
   },
-  
-  // Logout user
+
+  // Logout function (clear stored data)
   logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   },
-  
-  // Get current authenticated user
-  getCurrentUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  },
-  
-  // Check if user is authenticated
+
+  // Check if a user is authenticated by checking localStorage
   isAuthenticated: () => {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem("user");
   },
-  
-  // Get auth token
-  getToken: () => {
-    return localStorage.getItem('token');
-  }
 };
+
+export { authService };

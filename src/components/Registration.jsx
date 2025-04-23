@@ -26,7 +26,7 @@ const Registration = () => {
 
     try {
       // Replace the URL with your backend API endpoint
-      const response = await fetch("http://localhost:5000/api/registration", {
+      const response = await fetch("http://10.20.31.59:8080/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +39,7 @@ const Registration = () => {
         console.log("Registration Successful:", result);
         setSuccessMessage("Registration Successful!");
         setFormData({
-          username: "",
+          name: "",
           email: "",
           phone: "",
           password: "",

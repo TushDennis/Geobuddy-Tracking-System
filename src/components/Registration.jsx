@@ -1,35 +1,49 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Registration = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
-    phone: "",
-    password: "", 
-    
+    phoneNumber: "",
+    password: "",
   });
 
-  const [loading, setLoading] = useState(false); // Loading state for button
-  const [successMessage, setSuccessMessage] = useState(""); // Success message for feedback
-  const [errorMessage, setErrorMessage] = useState(""); // Error message for feedback
+  const [countryCode, setCountryCode] = useState("+254");
+  const [rawPhone, setRawPhone] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === "phone") {
+      setRawPhone(value);
+      setFormData({ ...formData, phoneNumber: countryCode + value });
+    } else if (name === "countryCode") {
+      setCountryCode(value);
+      setFormData({ ...formData, phoneNumber: value + rawPhone });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Show loading state
-    setSuccessMessage(""); // Clear any previous success message
-    setErrorMessage(""); // Clear any previous error message
+    setLoading(true);
+    setSuccessMessage("");
+    setErrorMessage("");
 
     try {
-      // Replace the URL with your backend API endpoint
-      const response = await fetch("http://localhost:5000/api/registration", {
+      const response = await fetch("http://localhost:8080/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -38,13 +52,17 @@ const Registration = () => {
         const result = await response.json();
         console.log("Registration Successful:", result);
         setSuccessMessage("Registration Successful!");
+        localStorage.setItem("phoneNumber", formData.phoneNumber);
+        localStorage.setItem("email", formData.email);
+        navigate("/verify-otp"); // if using react-router
+
         setFormData({
           username: "",
           email: "",
-          phone: "",
+          phoneNumber: "",
           password: "",
-        
         });
+        setRawPhone("");
       } else {
         const error = await response.json();
         setErrorMessage(`Registration failed: ${error.message}`);
@@ -53,8 +71,13 @@ const Registration = () => {
       setErrorMessage("An error occurred. Please try again later.");
       console.error("Error:", error);
     } finally {
-      setLoading(false); // Hide loading state
+      setLoading(false);
     }
+  };
+
+  // Function to navigate to login page
+  const navigateToLogin = () => {
+    navigate("/login");
   };
 
   return (
@@ -63,7 +86,6 @@ const Registration = () => {
         USER TRACKING REGISTRATION
       </h1>
 
-      {/* Feedback Messages */}
       {successMessage && (
         <p className="mt-4 text-green-600 text-center font-medium">
           {successMessage}
@@ -75,20 +97,18 @@ const Registration = () => {
         </p>
       )}
 
-      {/* Registration Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        
         <div>
           <label
-            htmlFor="Username"
+            htmlFor="username"
             className="block text-gray-600 mb-2 font-medium"
           >
             Username
           </label>
           <input
-            type="Username" 
-            id="Username"
-            name="Username"
+            type="text"
+            id="username"
+            name="username"
             value={formData.username}
             onChange={handleInputChange}
             placeholder="Enter your Username"
@@ -96,6 +116,7 @@ const Registration = () => {
             required
           />
         </div>
+
         <div>
           <label
             htmlFor="email"
@@ -114,7 +135,7 @@ const Registration = () => {
             required
           />
         </div>
-      
+
         <div>
           <label
             htmlFor="phone"
@@ -125,31 +146,33 @@ const Registration = () => {
           <div className="flex">
             <select
               name="countryCode"
-              id="countryCode"
+              value={countryCode}
               onChange={handleInputChange}
               className="border border-blue-300 rounded-l-md p-2 text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="+254">Kenya (+254)</option>
-              
+              {/* Add other countries if needed */}
             </select>
             <input
               type="tel"
               id="phone"
               name="phone"
-              value={formData.phone}
+              value={rawPhone}
               onChange={handleInputChange}
-              placeholder="Enter your phone number"
+              placeholder="********"
               className="w-full border border-gray-300 rounded-r-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          <div>
+        </div>
+
+        <div>
           <label
             htmlFor="password"
             className="block text-gray-600 mb-2 font-medium"
           >
-        Password
+            Password
           </label>
           <input
             type="password"
@@ -162,10 +185,7 @@ const Registration = () => {
             required
           />
         </div>
-          
-        </div>
-        
-        {/* Register Button */}
+
         <button
           type="submit"
           disabled={loading}
@@ -176,6 +196,16 @@ const Registration = () => {
           {loading ? "Submitting..." : "Register"}
         </button>
       </form>
+
+      {/* Login Button */}
+      <div className="text-center mt-4">
+        <button
+          onClick={navigateToLogin}
+          className="text-blue-600 hover:text-blue-800"
+        >
+          Already have an account? Log in
+        </button>
+      </div>
     </div>
   );
 };

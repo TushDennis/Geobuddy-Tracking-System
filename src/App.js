@@ -12,7 +12,7 @@ import CreateTable from "./components/CreateTable";
 import EditTable from "./components/EditTable";
 import { AuthProvider } from "./components/context/authContext"; 
 import ProtectedRoute from "./components/services/protectedRoute"; 
-
+import VerifyOtp from "./components/VerifyOtp";
 
 
 const App = () => {
@@ -23,31 +23,27 @@ const App = () => {
       <Router>
         <NavigationBar /> {/* Navigation Bar is always visible */}
         <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<LoginPage/>} />
+            <Route path="/travel-History" element={<Travel />} />
+            <Route path="/track-register" element={<Registration />} />
+            <Route path="/UserTable" element={<UserTable />} />
+            <Route path="/CreateTable" element={<CreateTable />} />
+            <Route path="/EditTable" element={<EditTable />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
 
-        <Routes>
-          
-         
-          <Route path="/" element={<LoginPage/>} />
-          <Route path="/home" element={<Home/>} />
-          <Route path="/travel-History" element={<Travel/>} />
-          <Route path="/track-register" element={<Registration />} />
-          <Route path="/UserTable"element={<UserTable/>}/>
-          <Route path="/CreateTable"element={<CreateTable/>}/>
-          <Route path="/EditTable" element={<EditTable/>}/>
-          
-        
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Home />} />
-            {/* Add more protected routes here */}
-          </Route>
-          
-          {/* Add more routes as needed */}
-        </Routes>
-        {/* Footer Section */}
-        <Footer />
+            <Route element={<ProtectedRoute />}>
+              {/* <Route path="/dashboard" element={<Home />} /> */}
+              {/* Add more protected routes here */}
+            </Route>
+
+            {/* Add more routes as needed */}
+          </Routes>
+          {/* Footer Section */}
+          <Footer />
         </AuthProvider>
       </Router>
-     
     </div>
   );
 };

@@ -5,7 +5,7 @@ import Home from "../src/components/Home";
 import Footer from "./components/footer";
 import LoginPage from "./components/LoginPage";
 import Registration from "./components/Registration";
-import Travel from "./components/Travel";  
+import ImeiData from "./components/ImeiData";  
 import "./index.css";
 import UserTable from "./components/UserTable";
 import CreateTable from "./components/CreateTable";
@@ -26,7 +26,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage/>} />
-            <Route path="/travel-History" element={<Travel />} />
+            <Route path="/ImeiData" element={<ImeiData />} />
             <Route path="/track-register" element={<Registration />} />
             <Route path="/UserTable" element={<UserTable />} />
             <Route path="/CreateTable" element={<CreateTable />} />
